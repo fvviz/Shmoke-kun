@@ -24,24 +24,29 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix=BOT_PREFIX, case_insensitive=True, intents=intents)
 bot.remove_command("help")
+disabled_exts = ["help.py", "other_server_integration.py"]
 
 
 def unload_cogs():
     for file in os.listdir("./cogs"):
         if file.endswith(".py") and not file.startswith("_"):
             try:
-                bot.unload_extension(f"cogs.{file[:-3]}")
+                if file not in disabled_exts:
+                    bot.unload_extension(f"cogs.{file[:-3]}")
             except Exception as e:
                 print(f"COG UNLOAD ERROR : {e}")
 
 
 def load_cogs():
+    bot.load_extension("jishaku")
     for file in os.listdir("./cogs"):
         if file.endswith(".py") and not file.startswith("_"):
             try:
-                bot.load_extension(f"cogs.{file[:-3]}")
+                if not file in ("welcome.py", "other_server_integration.py"):
+                   bot.load_extension(f"cogs.{file[:-3]}")
             except Exception as e:
                 print(f"COG LOAD ERROR : {e}\n\n{traceback.format_exc()}\n\n")
+
 
 
 @bot.event
@@ -51,7 +56,7 @@ async def on_ready():
     print(f"---> Total Servers : {len(bot.guilds)}\n")
     await bot.change_presence(
         activity=discord.Activity(
-            type=discord.ActivityType.watching, name="my friends study [\]"
+            type=discord.ActivityType.watching, name="my friends study [--]"
         )
     )
     load_cogs()
@@ -65,9 +70,9 @@ async def on_ready():
 @commands.is_owner()
 async def reload_cogs(ctx):
     unload_cogs()
-    await ctx.send("> Komi san unloaded cogs")
+    await ctx.send("> unloaded cogs")
     load_cogs()
-    await ctx.send("> Komi san loaded cogs")
+    await ctx.send("> loaded cogs")
 
 
 keep_alive()
