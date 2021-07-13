@@ -66,19 +66,10 @@ class Mesages(commands.Cog):
             return
         study_categ_ids = config["CATEGORY"].values()
 
-        print(after.channel)
         if after.channel != None:
             # WHEN SOMEONE JOINS A STUDY CHANNEL
-            print(member, "joined 1")
-            print(study_categ_ids)
             if after.channel.category_id in study_categ_ids:
-                print(study_categ_ids)
-                print(member, "joined 2")
-                try:
-                  await member.add_roles(self.STUDYING)
-                except Exception as err:
-                  print("role adding failure", err)
-                print(self.STUDYING,  "added")
+                await member.add_roles(self.STUDYING)
                 await member.remove_roles(self.TOMODACHI)
                 perms = after.channel.category.overwrites_for(self.STUDYING)
                 perms.view_channel = True
