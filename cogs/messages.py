@@ -34,11 +34,13 @@ class Mesages(commands.Cog):
             self.GUILD.text_channels, id=config["CHANNELS"]["TEXT"]["KOMI_MESSAGES"]
         )
         self.TOMODACHI = self.GUILD.get_role(config["ROLES"]["TOMODACHI"])
-        self.STUDYING = self.GUILD.get_role(config["ROLES"]["STUDYING"])
-        self.kick_stalkers.start()
+        self.STUDYING = self.GUILD.get_role(864364341960638465)
+        #self.kick_stalkers.start()
 
     ################# LOOPS #################
 
+
+    """
     @tasks.loop(minutes=config["KICK_STALKERS_AFTER"])
     async def kick_stalkers(self):
         # MOVE MEMBERS WHO DONT HAVE VIDEO OR SCREENSHARE
@@ -56,6 +58,7 @@ class Mesages(commands.Cog):
         #             await self.BOT_CHANNEL.send(
         #                 f"{mem.mention} was moved <:komi_sleep:843170281438576671>\n<#{vc.id}> -> <#{self.LOUNGE_VC.id}>\nReason : no camera or screenshare"
         #             )
+    """
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -63,22 +66,26 @@ class Mesages(commands.Cog):
             return
         study_categ_ids = config["CATEGORY"].values()
 
+        print(after.channel)
         if after.channel != None:
             # WHEN SOMEONE JOINS A STUDY CHANNEL
+            print(member, "joined 1")
+            print(study_categ_ids)
             if after.channel.category_id in study_categ_ids:
-                await member.add_roles(self.STUDYING)
+                print(study_categ_ids)
+                print(member, "joined 2")
+                try:
+                  await member.add_roles(self.STUDYING)
+                except Exception as err:
+                  print("role adding failure", err)
+                print(self.STUDYING,  "added")
                 await member.remove_roles(self.TOMODACHI)
                 perms = after.channel.category.overwrites_for(self.STUDYING)
                 perms.view_channel = True
                 perms.speak = False
                 await after.channel.set_permissions(member, overwrite=perms)
                 await member.edit(mute=True)
-                msg = f"{member.mention} joined <#{after.channel.id}> <:komi_ok:843170247670366239>\n"
-                if after.channel.category_id in (
-                    self.VIDEO_STUDY_CATEG.id,
-                    self.EXTRACURRICULAR_CATEG.id,
-                ):
-                    msg += f"**You need to share your screen or turn on camera or you will be moved to another channel**\n"
+                msg = f"{member.mention} joined <#{after.channel.id}>\n"
                 msg += f"Head over to <#{config['CHANNELS']['TEXT']['ACCOUNTABILITY']}> and post some goals to get started\n"
                 await self.BOT_CHANNEL.send(msg)
                 if after.channel.category_id == config["CATEGORY"]["PRIVATE"]:
@@ -92,7 +99,7 @@ class Mesages(commands.Cog):
                 await member.add_roles(self.TOMODACHI)
                 await member.remove_roles(self.STUDYING)
                 await before.channel.set_permissions(member, overwrite=None)
-                msg = f"**{member}** left <#{before.channel.id}> <:komi_sleep:843170281438576671> \n"
+                msg = f"**{member}** left <#{before.channel.id}>\n"
                 await self.BOT_CHANNEL.send(msg)
             else:
                 pass

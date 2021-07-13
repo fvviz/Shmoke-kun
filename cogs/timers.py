@@ -70,17 +70,9 @@ class Timers(commands.Cog):
         members = []
         for vc in self.GUILD.voice_channels:
             if vc.category_id in config["CATEGORY"].values():
-                if vc.category_id == config["CATEGORY"]["EXTRACURRICULAR"]:
-                    for mem in vc.members:
-                        if mem.voice.self_stream or mem.voice.self_video:
-                            members.append(mem)
-                else:
-                    for mem in vc.members:
-                        if not mem.bot:
-                            members.append(mem)
-        for vc in self.GUILD.stage_channels:
-            if vc.category_id in config["CATEGORY"].values():
-                members += vc.members
+                for mem in vc.members:
+                    if not mem.bot:
+                        members.append(mem)
         return members
 
     async def add_time(self, m: discord.Member):

@@ -14,7 +14,7 @@ class Help(commands.Cog):
         now = datetime.now(timezone("GMT"))
         last_day = calendar.monthrange(now.year, now.month)[1]
         dsc = f"""
-prefix : `\`
+prefix : `--`
 
 `studytime`
 aliases = [`st`]
